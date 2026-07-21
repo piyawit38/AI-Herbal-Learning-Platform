@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import { getUsers } from "../services/db";
 import { Leaf, Camera, MessageSquare, HelpCircle, Trophy, Award, Info, Sparkles, Volume2, ArrowRight, Upload } from "lucide-react";
+import { CameraModal } from "../components/common/CameraModal";
 
 export const Home: React.FC = () => {
   const { currentGarden, getGardenHerbs, getGardenQuizzes, getGardenAnnouncements } = useGarden();
@@ -18,6 +19,17 @@ export const Home: React.FC = () => {
   const herbs = getGardenHerbs();
   const quizzes = getGardenQuizzes();
   const announcements = getGardenAnnouncements();
+  
+  const [cameraMode, setCameraMode] = useState<"learn" | "test" | null>(null);
+
+  const handleCameraCapture = (base64: string) => {
+    if (cameraMode === "learn") {
+      navigate("/chatbot", { state: { imageSrc: base64 } });
+    } else if (cameraMode === "test") {
+      navigate("/challenge?tab=photo", { state: { imageSrc: base64 } });
+    }
+    setCameraMode(null);
+  };
   
   // Total users count from db
   const totalUsers = Math.max(12, getUsers().length + 84); // Pre-populated offset for realistic vibe
@@ -144,19 +156,20 @@ export const Home: React.FC = () => {
                 {/* Dual buttons with native overlays (Green & Gray) */}
                 <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
                   {/* ถ่ายรูปสด */}
-                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
-                    <input
-                      type="file"
-                      onChange={(e) => handlePhotoAction(e, "learn")}
-                      accept="image/*"
-                      capture="environment"
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                    />
-                    <div className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-teal-600">
-                      <Camera className="w-3.5 h-3.5 shrink-0" />
-                      <span>📸 ถ่ายรูปสด</span>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!showAI) {
+                        showToast("ขออภัย: ผู้ดูแลระบบได้ปิดบริการระบบวิเคราะห์ด้วย AI ชั่วคราว", "warning");
+                        return;
+                      }
+                      setCameraMode("learn");
+                    }}
+                    className="w-full sm:w-1/2 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-teal-600 cursor-pointer"
+                  >
+                    <Camera className="w-3.5 h-3.5 shrink-0" />
+                    <span>📸 ถ่ายรูปสด</span>
+                  </button>
                   
                   {/* เลือกจากแกลเลอรี */}
                   <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
@@ -195,19 +208,20 @@ export const Home: React.FC = () => {
                 {/* Dual buttons with native overlays (Amber & Gray) */}
                 <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
                   {/* ถ่ายรูปสด */}
-                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
-                    <input
-                      type="file"
-                      onChange={(e) => handlePhotoAction(e, "test")}
-                      accept="image/*"
-                      capture="environment"
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                    />
-                    <div className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-amber-600">
-                      <Camera className="w-3.5 h-3.5 shrink-0" />
-                      <span>📸 ถ่ายรูปสด</span>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!showQuiz) {
+                        showToast("ขออภัย: ผู้ดูแลระบบได้ปิดบริการระบบทดสอบความรู้ชั่วคราว", "warning");
+                        return;
+                      }
+                      setCameraMode("test");
+                    }}
+                    className="w-full sm:w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-amber-600 cursor-pointer"
+                  >
+                    <Camera className="w-3.5 h-3.5 shrink-0" />
+                    <span>📸 ถ่ายรูปสด</span>
+                  </button>
                   
                   {/* เลือกจากแกลเลอรี */}
                   <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
@@ -248,6 +262,12 @@ export const Home: React.FC = () => {
           );
         })}
       </div>
+
+      <CameraModal
+        isOpen={cameraMode !== null}
+        onClose={() => setCameraMode(null)}
+        onCapture={handleCameraCapture}
+      />
       
     </div>
   );
