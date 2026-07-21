@@ -134,17 +134,19 @@ ${herbNamesText}
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
-      contents: [
-        {
-          inlineData: {
-            mimeType: cleanMimeType,
-            data: cleanBase64,
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType: cleanMimeType,
+              data: cleanBase64,
+            },
           },
-        },
-        {
-          text: VISION_PROMPT,
-        },
-      ],
+          {
+            text: VISION_PROMPT,
+          },
+        ],
+      },
       config: {
         responseMimeType: "application/json",
         responseSchema: {
