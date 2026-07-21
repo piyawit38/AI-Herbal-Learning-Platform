@@ -175,23 +175,36 @@ export const Vision: React.FC = () => {
                   </p>
                 </div>
                 
-                {/* Dual high quality buttons triggered natively via labels */}
+                {/* Dual high quality buttons triggered natively via absolute input overlay */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md pt-2">
-                  <label
-                    htmlFor="herb-camera-capture"
-                    className="w-full sm:w-1/2 px-6 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 border border-teal-600"
-                  >
-                    <Camera className="w-4 h-4 shrink-0" />
-                    <span>📸 ถ่ายภาพสดด้วยกล้อง</span>
-                  </label>
+                  {/* ปุ่มถ่ายภาพสดจากกล้องจริง */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={handleFileSelect}
+                      accept="image/*"
+                      capture="environment"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full px-6 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600">
+                      <Camera className="w-4 h-4 shrink-0" />
+                      <span>📸 ถ่ายภาพสดด้วยกล้อง</span>
+                    </div>
+                  </div>
                   
-                  <label
-                    htmlFor="herb-image-upload"
-                    className="w-full sm:w-1/2 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
-                  >
-                    <Upload className="w-4 h-4 shrink-0" />
-                    <span>📁 เลือกรูปภาพจากคลัง</span>
-                  </label>
+                  {/* ปุ่มเลือกภาพจากคลังแกลเลอรี */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={handleFileSelect}
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full px-6 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700">
+                      <Upload className="w-4 h-4 shrink-0" />
+                      <span>📁 เลือกรูปภาพจากคลัง</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Info Note */}
