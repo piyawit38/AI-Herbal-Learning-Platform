@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useGarden } from "../contexts/GardenContext";
 import { useToast } from "../contexts/ToastContext";
 import { Camera, Upload, RefreshCw, AlertCircle, Sparkles, Check, ChevronRight, Leaf } from "lucide-react";
+import { CameraModal } from "../components/common/CameraModal";
 
 interface VisionResult {
   identifiedName: string;
@@ -21,6 +22,7 @@ export const Vision: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<VisionResult | null>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -175,22 +177,28 @@ export const Vision: React.FC = () => {
                   </p>
                 </div>
                 
-                {/* Dual high quality buttons triggered natively via absolute input overlay */}
+                {/* Camera Modal Integration */}
+                <CameraModal
+                  isOpen={isCameraOpen}
+                  onClose={() => setIsCameraOpen(false)}
+                  onCapture={(base64Data) => {
+                    setImageSrc(base64Data);
+                    setResult(null);
+                    analyzeImage(base64Data, "image/jpeg");
+                  }}
+                />
+
+                {/* Dual high quality buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md pt-2">
                   {/* ปุ่มถ่ายภาพสดจากกล้องจริง */}
-                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
-                    <input
-                      type="file"
-                      onChange={handleFileSelect}
-                      accept="image/*"
-                      capture="environment"
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                    />
-                    <div className="w-full px-6 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600">
-                      <Camera className="w-4 h-4 shrink-0" />
-                      <span>📸 ถ่ายภาพสดด้วยกล้อง</span>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCameraOpen(true)}
+                    className="w-full sm:w-1/2 px-6 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600 cursor-pointer"
+                  >
+                    <Camera className="w-4 h-4 shrink-0" />
+                    <span>📸 ถ่ายภาพสดด้วยกล้อง</span>
+                  </button>
                   
                   {/* ปุ่มเลือกภาพจากคลังแกลเลอรี */}
                   <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
@@ -211,10 +219,10 @@ export const Vision: React.FC = () => {
                 <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 text-left border border-slate-100 dark:border-slate-800 w-full max-w-md mt-2 space-y-1.5">
                   <span className="text-[10px] font-extrabold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">💡 คำแนะนำความเสถียรสำหรับการใช้งาน</span>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed m-0">
-                    • <span className="font-bold">ถ่ายภาพสดด้วยกล้อง</span>: ระบบปฏิบัติการมือถือ (iOS/Android) จะเปิดกล้องโทรศัพท์จริงขึ้นมาให้คุณถ่ายภาพทันที รวดเร็ว และไม่ต้องขอสิทธิ์เบราว์เซอร์แยกต่างหาก
+                    • <span className="font-bold">ถ่ายภาพสดด้วยกล้อง</span>: สแกนผ่านกล้องสดอัจฉริยะแบบ Real-time บนหน้าจอทันที คมชัด และประมวลผลทันใจ
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed m-0">
-                    • <span className="font-bold">เลือกรูปภาพจากคลัง</span>: จะแสดงตัวเลือกอัลบั้มภาพ, คลังรูปภาพเครื่อง หรือระบบจัดการไฟล์ เพื่อนำรูปที่มีอยู่แล้วมาสแกนวิเคราะห์ด้วย AI ทันที
+                    • <span className="font-bold">เลือกรูปภาพจากคลัง</span>: จะแสดงตัวเลือกอัลบั้มภาพ หรือคลังรูปภาพในมือถือ เพื่ออัปโหลดรูปภาพที่มีอยู่แล้วมาสแกนวิเคราะห์ด้วย AI ทันที
                   </p>
                 </div>
 
