@@ -4,7 +4,7 @@ import { useGarden } from "../contexts/GardenContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import { getUsers } from "../services/db";
-import { Leaf, Camera, MessageSquare, HelpCircle, Trophy, Award, Info, Sparkles, Volume2, ArrowRight } from "lucide-react";
+import { Leaf, Camera, MessageSquare, HelpCircle, Trophy, Award, Info, Sparkles, Volume2, ArrowRight, Upload } from "lucide-react";
 
 export const Home: React.FC = () => {
   const { currentGarden, getGardenHerbs, getGardenQuizzes, getGardenAnnouncements } = useGarden();
@@ -126,7 +126,7 @@ export const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
             {/* Mode 1: Learn */}
             {showAI && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between gap-4 hover:shadow-md transition-all group">
+              <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between gap-5 hover:shadow-md transition-all group">
                 <div className="space-y-3">
                   <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 flex items-center justify-center">
                     <MessageSquare className="w-6 h-6" />
@@ -141,27 +141,43 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
 
-                <input
-                  type="file"
-                  ref={learnInputRef}
-                  onChange={(e) => handlePhotoAction(e, "learn")}
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                />
-                <button
-                  onClick={() => learnInputRef.current?.click()}
-                  className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                >
-                  <Camera className="w-4 h-4" />
-                  <span>เปิดกล้องถ่ายภาพระบุพืช</span>
-                </button>
+                {/* Dual buttons with native overlays (Green & Gray) */}
+                <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
+                  {/* ถ่ายรูปสด */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={(e) => handlePhotoAction(e, "learn")}
+                      accept="image/*"
+                      capture="environment"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-teal-600">
+                      <Camera className="w-3.5 h-3.5 shrink-0" />
+                      <span>📸 ถ่ายรูปสด</span>
+                    </div>
+                  </div>
+                  
+                  {/* เลือกจากแกลเลอรี */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={(e) => handlePhotoAction(e, "learn")}
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700">
+                      <Upload className="w-3.5 h-3.5 shrink-0" />
+                      <span>📁 เลือกคลังภาพ</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Mode 2: Test */}
             {showQuiz && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between gap-4 hover:shadow-md transition-all group">
+              <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between gap-5 hover:shadow-md transition-all group">
                 <div className="space-y-3">
                   <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                     <HelpCircle className="w-6 h-6" />
@@ -176,21 +192,37 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
 
-                <input
-                  type="file"
-                  ref={testInputRef}
-                  onChange={(e) => handlePhotoAction(e, "test")}
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                />
-                <button
-                  onClick={() => testInputRef.current?.click()}
-                  className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                >
-                  <Camera className="w-4 h-4" />
-                  <span>เปิดกล้องสแกนตอบคำถาม</span>
-                </button>
+                {/* Dual buttons with native overlays (Amber & Gray) */}
+                <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full">
+                  {/* ถ่ายรูปสด */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={(e) => handlePhotoAction(e, "test")}
+                      accept="image/*"
+                      capture="environment"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-amber-600">
+                      <Camera className="w-3.5 h-3.5 shrink-0" />
+                      <span>📸 ถ่ายรูปสด</span>
+                    </div>
+                  </div>
+                  
+                  {/* เลือกจากแกลเลอรี */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={(e) => handlePhotoAction(e, "test")}
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700">
+                      <Upload className="w-3.5 h-3.5 shrink-0" />
+                      <span>📁 เลือกคลังภาพ</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
