@@ -22,6 +22,7 @@ export const Vision: React.FC = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<VisionResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
 
 
@@ -139,6 +140,18 @@ export const Vision: React.FC = () => {
         {/* Left Side: Upload Zone (7 Columns) */}
         <div className="lg:col-span-7 space-y-6">
           
+          {/* Input สำหรับเปิดกล้องถ่ายภาพจริง (Native Camera) โดยตรงบนมือถือ */}
+          <input
+            type="file"
+            id="herb-camera-capture"
+            ref={cameraInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+          />
+
+          {/* Input สำหรับเลือกรูปภาพจากอัลบั้มหรือไฟล์ */}
           <input
             type="file"
             id="herb-image-upload"
@@ -158,25 +171,38 @@ export const Vision: React.FC = () => {
                 <div className="space-y-2">
                   <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">ถ่ายภาพสดหรือเลือกอัปโหลดรูปภาพ</h3>
                   <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm leading-relaxed mx-auto">
-                    กดปุ่มเลือกรูปภาพด้านล่างเพื่อถ่ายภาพสมุนไพรจากกล้องโทรศัพท์โดยตรง หรืออัปโหลดไฟล์รูปภาพ (.jpg, .png) จากตัวเครื่องเพื่อวิเคราะห์ด้วย AI ทันที
+                    เลือกวิธีสแกนที่คุณต้องการด้านล่าง ระบบเปิดรับทั้งกล้องสดเนทีฟของมือถือและคลังภาพโดยตรง
                   </p>
                 </div>
                 
-                {/* Single high quality button triggered natively via label */}
-                <label
-                  htmlFor="herb-image-upload"
-                  className="px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span>ถ่ายภาพ / เลือกไฟล์รูปภาพจากเครื่อง</span>
-                </label>
+                {/* Dual high quality buttons triggered natively via labels */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md pt-2">
+                  <label
+                    htmlFor="herb-camera-capture"
+                    className="w-full sm:w-1/2 px-6 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 border border-teal-600"
+                  >
+                    <Camera className="w-4 h-4 shrink-0" />
+                    <span>📸 ถ่ายภาพสดด้วยกล้อง</span>
+                  </label>
+                  
+                  <label
+                    htmlFor="herb-image-upload"
+                    className="w-full sm:w-1/2 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
+                  >
+                    <Upload className="w-4 h-4 shrink-0" />
+                    <span>📁 เลือกรูปภาพจากคลัง</span>
+                  </label>
+                </div>
 
                 {/* Info Note */}
-                <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 text-left border border-slate-100 dark:border-slate-800 w-full max-w-md mt-2 space-y-1">
-                  <span className="text-[10px] font-extrabold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">💡 คำแนะนำการใช้งานบนมือถือ</span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed block">
-                    เมื่อแตะปุ่มด้านบนผ่านสมาร์ทโฟน (iOS หรือ Android) ระบบจะเปิดกล้องโทรศัพท์จริงให้สแกนอย่างสะดวกรวดเร็ว โดยไม่ต้องขอสิทธิ์พิเศษใดๆ บนเบราว์เซอร์
-                  </span>
+                <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 text-left border border-slate-100 dark:border-slate-800 w-full max-w-md mt-2 space-y-1.5">
+                  <span className="text-[10px] font-extrabold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">💡 คำแนะนำความเสถียรสำหรับการใช้งาน</span>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed m-0">
+                    • <span className="font-bold">ถ่ายภาพสดด้วยกล้อง</span>: ระบบปฏิบัติการมือถือ (iOS/Android) จะเปิดกล้องโทรศัพท์จริงขึ้นมาให้คุณถ่ายภาพทันที รวดเร็ว และไม่ต้องขอสิทธิ์เบราว์เซอร์แยกต่างหาก
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed m-0">
+                    • <span className="font-bold">เลือกรูปภาพจากคลัง</span>: จะแสดงตัวเลือกอัลบั้มภาพ, คลังรูปภาพเครื่อง หรือระบบจัดการไฟล์ เพื่อนำรูปที่มีอยู่แล้วมาสแกนวิเคราะห์ด้วย AI ทันที
+                  </p>
                 </div>
 
                 {/* Sample presets strip for immediate demo */}
