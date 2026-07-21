@@ -9,6 +9,7 @@ import {
   AlertTriangle, ArrowRight, Trophy, BookOpen, AlertCircle,
   Camera, Upload, Check, RotateCcw, Award, Leaf, Printer, Share2, QrCode, Shield, Compass, FileText
 } from "lucide-react";
+import { CameraModal } from "../components/common/CameraModal";
 
 // Types for Game
 interface GameHerb {
@@ -156,6 +157,63 @@ export const Challenge: React.FC = () => {
   const [savingScore, setSavingScore] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const handleCameraCapture = async (base64: string) => {
+    setUploadedImage(base64);
+    setGameState("SCANNING");
+    showToast("กำลังประมวลผลวิเคราะห์พันธุ์พืชด้วย AI สำหรับเกมทดสอบความรู้...", "info");
+
+    try {
+      const herbsList = getGardenHerbs();
+      const response = await fetch("/api/gemini/vision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: "image/jpeg",
+          gardenName: currentGarden.name,
+          herbsList
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("ระบบ AI ขัดข้องชั่วคราว");
+      }
+
+      const visionResult = await response.json();
+      const foundDbHerb = getGardenHerbs().find(h => h.herbId === visionResult.matchedHerbId);
+      
+      const customHerb: GameHerb = {
+        id: visionResult.matchedHerbId || "CUSTOM_" + Date.now(),
+        name: visionResult.identifiedName || "สมุนไพรพื้นบ้าน",
+        scientific: visionResult.scientificName || "Inconnue botanica",
+        image: base64,
+        correctProperty: foundDbHerb?.properties?.[0] || visionResult.analysisText?.substring(0, 80) || "บำรุงร่างกาย ดับพิษร้อน และฟื้นฟูธาตุ",
+        distractors: [
+          "บรรเทาอาการท้องอืด ท้องเฟ้อ จุกเสียด และช่วยขับลมในลำไส้",
+          "ชำระเส้นผม ขจัดรังแคแก้อาการคันหนังศีรษะเด่นชัด",
+          "ลดความดันโลหิตและช่วยบำรุงสายตาเพื่อผ่อนคลายกล้ามเนื้อ"
+        ]
+      };
+
+      setActiveGameHerb(customHerb);
+      const shuffledOptions = [customHerb.correctProperty, ...customHerb.distractors]
+        .sort(() => Math.random() - 0.5);
+      setPropertiesOptions(shuffledOptions);
+      setGameState("Q1_RECOGNITION");
+      showToast("วิเคราะห์รูปภาพสำเร็จแล้ว!", "success");
+    } catch (err) {
+      console.error(err);
+      const fallbackHerb = presetHerbs[Math.floor(Math.random() * presetHerbs.length)];
+      setActiveGameHerb(fallbackHerb);
+      const shuffledOptions = [fallbackHerb.correctProperty, ...fallbackHerb.distractors]
+        .sort(() => Math.random() - 0.5);
+      setPropertiesOptions(shuffledOptions);
+      setGameState("Q1_RECOGNITION");
+      showToast("ระบุภาพล้มเหลว ใช้สมุนไพรจำลองแทนเพื่อทำต่อ", "warning");
+    }
+  };
 
     const presetHerbs: GameHerb[] = [
       {
@@ -715,22 +773,24 @@ export const Challenge: React.FC = () => {
                   </p>
                 </div>
 
+                {/* Camera Modal for live WebRTC in-app scan */}
+                <CameraModal
+                  isOpen={isCameraOpen}
+                  onClose={() => setIsCameraOpen(false)}
+                  onCapture={handleCameraCapture}
+                />
+
                 {/* Dual buttons with native overlays (Green & Gray) */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
                   {/* ถ่ายรูปสด */}
-                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
-                    <input
-                      type="file"
-                      onChange={handleFileUpload}
-                      accept="image/*"
-                      capture="environment"
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                    />
-                    <div className="w-full px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600">
-                      <Camera className="w-4 h-4 shrink-0" />
-                      <span>📸 ถ่ายรูปสดด้วยกล้อง</span>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCameraOpen(true)}
+                    className="w-full sm:w-1/2 px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600 cursor-pointer"
+                  >
+                    <Camera className="w-4 h-4 shrink-0" />
+                    <span>📸 ถ่ายรูปสดด้วยกล้อง</span>
+                  </button>
                   
                   {/* เลือกจากคลัง */}
                   <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
