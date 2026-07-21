@@ -703,26 +703,47 @@ export const Challenge: React.FC = () => {
                 </p>
               </div>
 
-              {/* Upload Dashed Box */}
-              <div className="w-full max-w-lg">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-teal-500/40 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all bg-slate-50/50 dark:bg-slate-850/20 hover:bg-teal-50/10 flex flex-col items-center justify-center gap-3.5 group"
-                >
-                  <div className="p-3.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl group-hover:scale-105 transition-all text-teal-600 dark:text-teal-400 shadow-xs">
-                    <Camera className="w-8 h-8" />
+              {/* Upload Dashed Box / Dual Buttons */}
+              <div className="w-full max-w-lg bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 sm:p-8 text-center shadow-2xs flex flex-col items-center justify-center gap-5">
+                <div className="p-3.5 bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 rounded-full">
+                  <Camera className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                  <span className="font-extrabold text-sm text-slate-700 dark:text-slate-200 block">เปิดกล้องถ่ายภาพ หรือ เลือกแกลเลอรีความรู้</span>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-xs leading-normal mx-auto">
+                    เลือกใช้กล้องสดจากสมาร์ทโฟนของคุณเพื่อความคมชัดสูงสุด หรือเลือกภาพจากอุปกรณ์มาวิเคราะห์วิชาการ
+                  </p>
+                </div>
+
+                {/* Dual buttons with native overlays (Green & Gray) */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
+                  {/* ถ่ายรูปสด */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept="image/*"
+                      capture="environment"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-teal-600">
+                      <Camera className="w-4 h-4 shrink-0" />
+                      <span>📸 ถ่ายรูปสดด้วยกล้อง</span>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <span className="font-extrabold text-xs sm:text-sm text-slate-700 dark:text-slate-350 block">เปิดกล้องถ่ายรูป หรือ เลือกจากแกลเลอรี</span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block leading-normal">รองรับ JPG, PNG หรือไฟล์ภาพความละเอียดสูง</span>
+                  
+                  {/* เลือกจากคลัง */}
+                  <div className="relative w-full sm:w-1/2 overflow-hidden rounded-xl">
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="w-full px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700">
+                      <Upload className="w-4 h-4 shrink-0" />
+                      <span>📁 เลือกคลังภาพ/อัลบั้ม</span>
+                    </div>
                   </div>
                 </div>
               </div>
