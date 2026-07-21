@@ -91,7 +91,7 @@ export const Home: React.FC = () => {
             </h1>
             
             <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-sans mt-2 text-left">
-              ยินดีต้อนรับสู่ <span className="font-semibold text-white">{currentGarden.name}</span> สำรวจสวนสมุนไพรด้วย AI ถ่ายภาพเพื่อจำแนกชนิดพืช เรียนรู้ผ่านบทสนทนา ทำแบบทดสอบ และสะสมเกียรติบัตรดิจิทัล พร้อมเชื่อมโยงภูมิปัญญาไทยสู่การเรียนรู้ในยุคดิจิทัล
+              ยินดีต้อนรับสู่ <span className="font-semibold text-white">{currentGarden.name}</span> สำรวจพืชสมุนไพรด้วยระบบ AI ถ่ายภาพเพื่อระบุชนิดพืช แชทพูดคุยเพื่อเรียนรู้สรรพคุณ ทำแบบทดสอบความรู้ และสะสมเกียรติบัตรออนไลน์
             </p>
 
             <div className="flex flex-wrap gap-3 mt-4">
