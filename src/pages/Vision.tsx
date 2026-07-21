@@ -141,6 +141,7 @@ export const Vision: React.FC = () => {
           
           <input
             type="file"
+            id="herb-image-upload"
             ref={fileInputRef}
             onChange={handleFileSelect}
             accept="image/*"
@@ -161,14 +162,14 @@ export const Vision: React.FC = () => {
                   </p>
                 </div>
                 
-                {/* Single high quality button */}
-                <button
-                  onClick={triggerUpload}
+                {/* Single high quality button triggered natively via label */}
+                <label
+                  htmlFor="herb-image-upload"
                   className="px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
                   <span>ถ่ายภาพ / เลือกไฟล์รูปภาพจากเครื่อง</span>
-                </button>
+                </label>
 
                 {/* Info Note */}
                 <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 text-left border border-slate-100 dark:border-slate-800 w-full max-w-md mt-2 space-y-1">
