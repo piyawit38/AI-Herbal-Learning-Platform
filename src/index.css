@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Natural Tones custom override of slate (sand tones) */
+  --color-slate-50: #fcfaf7;   /* `--bg-base` */
+  --color-slate-100: #eee7df;  /* `--border-color` */
+  --color-slate-150: #e7dfd5;
+  --color-slate-200: #e1d4c7;
+  --color-slate-300: #c9b9aa;
+  --color-slate-400: #a19385;
+  --color-slate-500: #8e8882;  /* `--text-muted` */
+  --color-slate-600: #746e68;
+  --color-slate-700: #5c5651;
+  --color-slate-800: #43403d;  /* `--text-main` */
+  --color-slate-850: #34312f;
+  --color-slate-900: #2d2a28;  /* dark theme card-bg / body */
+  --color-slate-950: #1b1918;
+
+  /* Natural Tones override of teal & emerald (sage green) */
+  --color-teal-50: #f1f4f0;
+  --color-teal-100: #e2e8e1;
+  --color-teal-200: #c6d2c3;
+  --color-teal-300: #a7baa2;
+  --color-teal-400: #8b9d83;   /* `--accent-sage` */
+  --color-teal-500: #8b9d83;   /* `--accent-sage` */
+  --color-teal-600: #73846c;
+  --color-teal-700: #5b6956;
+  --color-teal-800: #434e3f;
+  --color-teal-900: #2c332a;
+  --color-teal-950: #161a15;
+
+  --color-emerald-50: #f1f4f0;
+  --color-emerald-100: #e2e8e1;
+  --color-emerald-200: #c6d2c3;
+  --color-emerald-300: #a7baa2;
+  --color-emerald-400: #8b9d83;
+  --color-emerald-500: #8b9d83;
+  --color-emerald-600: #73846c;
+  --color-emerald-700: #5b6956;
+  --color-emerald-800: #434e3f;
+  --color-emerald-900: #2c332a;
+  --color-emerald-950: #161a15;
+
+  /* Natural Tones override of amber (clay accent) */
+  --color-amber-50: #fdf0e9;
+  --color-amber-100: #f8ded0;
+  --color-amber-200: #f2bea2;
+  --color-amber-300: #eba076;
+  --color-amber-400: #b8907a;  /* `--accent-clay` */
+  --color-amber-500: #b8907a;  /* `--accent-clay` */
+  --color-amber-600: #a27c67;
+  --color-amber-700: #896653;
+  --color-amber-800: #6f5041;
+  --color-amber-900: #543b2f;
+  --color-amber-950: #38251e;
+
+  /* Indigo and other accents can play well with warm sand tones or clay */
+  --color-indigo-50: #fcfaf7;
+  --color-indigo-100: #eee7df;
+  --color-indigo-200: #dbcdbd;
+  --color-indigo-300: #bcab99;
+  --color-indigo-400: #a29180;
+  --color-indigo-500: #8b9d83; /* sage as secondary option */
+  --color-indigo-600: #b8907a; /* clay as main accent */
+  --color-indigo-700: #a27c67;
+  --color-indigo-800: #896653;
+  --color-indigo-900: #543b2f;
+
+  /* Custom shadow mapping */
+  --shadow-sm: 0 2px 4px 0 rgba(67, 64, 61, 0.02);
+  --shadow-md: 0 10px 25px -5px rgba(67, 64, 61, 0.05); /* `--card-shadow` */
+  --shadow-lg: 0 20px 30px -10px rgba(67, 64, 61, 0.08);
+}
+
+/* Custom styles for organic soft elements */
+body {
+  font-family: var(--font-sans);
+  background-color: #fcfaf7;
+  color: #43403d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #1b1918;
+  color: #eee7df;
+}
+
+/* Fine-tune scrollbars for natural theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dbcdbd;
+  border-radius: 99px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #43403d;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bcab99;
+}
+
+/* Animations helper */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

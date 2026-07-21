@@ -1,0 +1,10 @@
+{
+  "name": "Remix: AI Herbal Learning Platform",
+  "description": "An intelligent herbal learning platform with AI Chat, Vision analysis, interactive quizzes, and digital certificates, starting with the Hat Yai Bio-Wellness Center under the \u00271 Local Government, 1 Herb Garden\u0027 initiative.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
