@@ -23,93 +23,7 @@ export const Vision: React.FC = () => {
   const [result, setResult] = useState<VisionResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Live streaming states
-  const [isLiveCameraActive, setIsLiveCameraActive] = useState(false);
-  const [cameraError, setCameraError] = useState<string | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Clean up stream on unmount
-  React.useEffect(() => {
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, [stream]);
-
-  const startLiveCamera = async () => {
-    setCameraError(null);
-    setIsLiveCameraActive(true);
-    setImageSrc(null);
-    setResult(null);
-    
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error("เบราว์เซอร์นี้ไม่รองรับการสตรีมกล้องวิดีโอโดยตรง หรือการเข้าถึงถูกบล็อกโดย Iframe");
-      }
-      
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-        audio: false
-      });
-      
-      setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
-      showToast("เปิดระบบกล้องถ่ายสดสำเร็จแล้ว!", "success");
-    } catch (err: any) {
-      console.error("Camera error:", err);
-      let errorMsg = "ไม่สามารถเชื่อมต่อกล้องวิดีโอสดได้";
-      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        errorMsg = "เบราว์เซอร์ปฏิเสธการเข้าถึงกล้อง (หรือติดสิทธิ์ความปลอดภัย Iframe Sandbox) กรุณาตรวจสอบว่าอนุญาตให้ใช้กล้องในแอดเดรสบาร์แล้ว หรือสลับไปใช้ 'ถ่ายรูปด่วนผ่านระบบมือถือ' ด้านล่างแทน";
-      } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
-        errorMsg = "ไม่พบอุปกรณ์กล้องวิดีโอบนเครื่องนี้";
-      } else {
-        errorMsg = `ข้อผิดพลาด: ${err.message || err}`;
-      }
-      setCameraError(errorMsg);
-      setIsLiveCameraActive(false);
-      showToast("ระบบสลับกลับมาโหมดอัปโหลดรูปภาพหลักให้เรียบร้อยแล้ว", "info");
-    }
-  };
-
-  const stopLiveCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-    setIsLiveCameraActive(false);
-  };
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
-      
-      if (context) {
-        // Set dimensions match video stream
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 480;
-        
-        // Draw video frame to canvas
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Convert canvas to base64
-        const dataUrl = canvas.toDataURL("image/jpeg");
-        setImageSrc(dataUrl);
-        
-        // Stop stream
-        stopLiveCamera();
-        
-        // Run analysis
-        analyzeImage(dataUrl, "image/jpeg");
-      }
-    }
-  };
 
   // High-res presets for mock/instant scanning demos
   const presetImages = [
@@ -233,93 +147,41 @@ export const Vision: React.FC = () => {
             className="hidden"
           />
 
-          <canvas ref={canvasRef} className="hidden" />
-
-          {/* If live webcam is active, show the webcam streaming viewfinder */}
-          {isLiveCameraActive ? (
-            <div className="bg-slate-950 rounded-2xl overflow-hidden shadow-md relative aspect-video border-4 border-teal-600">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-3 left-3 bg-teal-600 text-white font-bold text-[10px] px-2 py-1 rounded-full uppercase tracking-wider animate-pulse flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-white block animate-ping" />
-                กล้องถ่ายสดออนไลน์ (Live Camera)
-              </div>
-              
-              {/* Camera Action Overlay Bar */}
-              <div className="absolute bottom-4 inset-x-4 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={stopLiveCamera}
-                  className="px-4 py-2.5 bg-slate-900/90 text-slate-200 hover:bg-slate-900 rounded-xl text-xs font-bold transition-all cursor-pointer"
-                >
-                  ยกเลิกกล้องสด
-                </button>
-                <button
-                  type="button"
-                  onClick={capturePhoto}
-                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-lg flex items-center gap-2 transition-all scale-105 active:scale-95 cursor-pointer"
-                >
-                  <Camera className="w-4 h-4" />
-                  <span>กดถ่ายรูปเดี๋ยวนี้</span>
-                </button>
-              </div>
-            </div>
-          ) : !imageSrc ? (
+          {!imageSrc ? (
             /* Upload and Live selection card */
             <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-850 rounded-2xl p-6 sm:p-10 text-center shadow-xs flex flex-col items-center justify-center gap-4 transition-all hover:border-teal-500/30">
-                <div className="p-4 bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 rounded-2xl">
-                  <Camera className="w-10 h-10" />
+              <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-850 rounded-2xl p-8 sm:p-12 text-center shadow-xs flex flex-col items-center justify-center gap-5 transition-all hover:border-teal-500/30">
+                <div className="p-4 bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 rounded-full">
+                  <Camera className="w-10 h-10 text-teal-600" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">เข้าถึงกล้องสแกนสมุนไพร</h3>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm leading-relaxed">
-                    เลือกวิธีที่สะดวกที่สุดของคุณเพื่อถ่ายภาพและระบุสมุนไพรในสวนได้ทันที
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">ถ่ายภาพสดหรือเลือกอัปโหลดรูปภาพ</h3>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm leading-relaxed mx-auto">
+                    กดปุ่มเลือกรูปภาพด้านล่างเพื่อถ่ายภาพสมุนไพรจากกล้องโทรศัพท์โดยตรง หรืออัปโหลดไฟล์รูปภาพ (.jpg, .png) จากตัวเครื่องเพื่อวิเคราะห์ด้วย AI ทันที
                   </p>
                 </div>
                 
-                {/* Dual action buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md pt-2">
-                  <button
-                    onClick={startLiveCamera}
-                    className="w-full sm:w-1/2 px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <Camera className="w-4 h-4" />
-                    <span>📸 เปิดกล้องวิดีโอสด</span>
-                  </button>
-                  <button
-                    onClick={triggerUpload}
-                    className="w-full sm:w-1/2 px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer border border-slate-200 dark:border-slate-750"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>📁 ถ่ายผ่านระบบมือถือ / อัปโหลด</span>
-                  </button>
-                </div>
+                {/* Single high quality button */}
+                <button
+                  onClick={triggerUpload}
+                  className="px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>ถ่ายภาพ / เลือกไฟล์รูปภาพจากเครื่อง</span>
+                </button>
 
-                {/* Explicit Camera permission troubleshooting help guide */}
-                <div className="w-full text-left bg-amber-50 dark:bg-amber-950/10 border border-amber-200/50 dark:border-amber-900/30 rounded-xl p-4 mt-2 space-y-2">
-                  <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                    <span>💡 ไม่พบกล้อง หรือปุ่มเปิดกล้องใช้ไม่ได้?</span>
-                  </h4>
-                  <ul className="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 leading-relaxed list-disc list-inside">
-                    <li>
-                      <span className="font-bold text-slate-800 dark:text-slate-200">แนะนำสำหรับมือถือ:</span> ให้คลิกปุ่มสีเทา <span className="font-bold">"ถ่ายผ่านระบบมือถือ / อัปโหลด"</span> ด้านบน ระบบปฏิบัติการ (iOS หรือ Android) จะเปิดอินเทอร์เฟซกล้องถ่ายรูปแบบเนทีฟของตัวเครื่องให้คุณทันที ซึ่งทำงานได้เสถียรที่สุดและไม่ต้องขอสิทธิ์ผ่านเบราว์เซอร์แยก!
-                    </li>
-                    <li>
-                      <span className="font-bold text-slate-800 dark:text-slate-200">สิทธิ์บนเบราว์เซอร์:</span> สำหรับคอมพิวเตอร์ โปรดคลิกที่ไอคอนแม่กุญแจ 🔒 หรือกล้องถ่ายรูปที่มุมซ้ายบนของเบราว์เซอร์ (Address Bar) เพื่อกด <span className="font-bold">"อนุญาต (Allow)"</span> เข้าถึงสิทธิ์กล้องวิดีโอของอุปกรณ์
-                    </li>
-                  </ul>
+                {/* Info Note */}
+                <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 text-left border border-slate-100 dark:border-slate-800 w-full max-w-md mt-2 space-y-1">
+                  <span className="text-[10px] font-extrabold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">💡 คำแนะนำการใช้งานบนมือถือ</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed block">
+                    เมื่อแตะปุ่มด้านบนผ่านสมาร์ทโฟน (iOS หรือ Android) ระบบจะเปิดกล้องโทรศัพท์จริงให้สแกนอย่างสะดวกรวดเร็ว โดยไม่ต้องขอสิทธิ์พิเศษใดๆ บนเบราว์เซอร์
+                  </span>
                 </div>
 
                 {/* Sample presets strip for immediate demo */}
                 <div className="w-full pt-6 border-t border-slate-100 dark:border-slate-800 mt-2 space-y-3">
                   <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-                    หรือคลิกเลือกรูปตัวอย่างเพื่อทดสอบระบบสแกน:
+                    หรือคลิกเลือกรูปภาพตัวอย่างสมุนไพรในระบบเพื่อจำลองการสแกนทันที:
                   </span>
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     {presetImages.map((img, idx) => (
@@ -334,13 +196,6 @@ export const Vision: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {cameraError && (
-                <div className="p-4 bg-red-500/5 border border-red-500/10 text-red-600 dark:text-red-400 text-xs rounded-xl flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{cameraError}</span>
-                </div>
-              )}
             </div>
           ) : (
             /* Active preview zone */
