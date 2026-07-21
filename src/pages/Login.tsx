@@ -143,9 +143,7 @@ export const Login: React.FC = () => {
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block">
                   รหัสผ่านผู้ดูแลระบบ:
                 </label>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                  (รหัสผ่านในการทดสอบคือ: admin1234)
-                </span>
+               
               </div>
               <div className="relative">
                 <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
